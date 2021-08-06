@@ -13,11 +13,13 @@ contract stakedAVAX is ERC20, Ownable {
         uint256 amount ;
         uint256 finalAmount ;
         uint256 endingTimestamp ;
+        bool withdraw ;
         bool updated ;
         bool redeemed ;
     }
     mapping (uint256 => Stake) public stakeds ;
     uint256 public secondsInFuture = 14*24*3600 ;
+    uint256 public maxSecondsInFuture = 365*24*3600;
     uint256 public minimumValue = 25 ether ;
 
     constructor() ERC20("stakedAVAX", "sAVAX") {
@@ -73,7 +75,16 @@ contract stakedAVAX is ERC20, Ownable {
         emit Redeem(stakeId, s.finalAmount);
     }
 
-    function updateVariables(uint256 secondsF, uint256 minimum) public onlyOwner {
+    function withdraw(uint256 stakeId) public onlyOwner {
+        Stake storage s = stakeds[stakeId] ;
+        require(s.withdraw == false, "Already Withdrawn");
+        require(payable(msg.sender).send(s.amount), "Send failed");
+        s.withdraw = true ;
+
+    }
+
+    function updateVariables(uint256 secondsF, uint256 maxSecondsF, uint256 minimum) public onlyOwner {
+        maxSecondsInFuture = maxSecondsF ;
         secondsInFuture = secondsF ;
         minimumValue = minimum ;
     }

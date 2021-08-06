@@ -80,7 +80,7 @@ contract stakedAVAX is ERC20, Ownable {
 
     event Staked(address indexed user, uint256 stakeId, uint256 value);
 
-    event StakeEnded(uint256 stakeId, uint256 finalAMount);
+    event StakeEnded(uint256 stakeId, uint256 finalAmount);
 
-    event Redeem(uint256 stakeId, uint256 finalAMount);
+    event Redeem(uint256 stakeId, uint256 finalAmount);
 }

@@ -15,14 +15,22 @@ const xKeyChain = avalancheInstance.XChain().keyChain();
 const cKeyChain = avalancheInstance.CChain().keyChain();
 const pKeyChain = avalancheInstance.PChain().keyChain();
 
-async function main() {
+async function main() { //a C --> P cross-chain transfer doesn't exists, but C --> X, X --> P does.
+
+}
+
+async function setup() {
     const pkey = JSON.parse(await fs.readFileSync("./data.json")).privateKey;
     xKeyChain.importKey(pkey);
     cKeyChain.importKey(pkey);
     pKeyChain.importKey(pkey);
+    await main();
 }
 
-main();
+async function start() {
+    await setup();
+    await main();
+}
 
 main.catch(error => {
     console.log("We got an error !:\n" + error);

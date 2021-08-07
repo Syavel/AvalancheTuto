@@ -20,6 +20,7 @@ contract stakedAVAX is ERC20, Ownable {
     mapping (uint256 => Stake) public stakeds ;
     uint256 public secondsInFuture = 14*24*3600 ;
     uint256 public maxSecondsInFuture = 365*24*3600;
+    uint256 public secondsBeforeAllRedeem = 60*24*3600 ;
     uint256 public minimumValue = 25 ether ;
 
     constructor() ERC20("stakedAVAX", "sAVAX") {
@@ -53,11 +54,11 @@ contract stakedAVAX is ERC20, Ownable {
 
     function redeem(uint256 stakeId) public {
         Stake storage s = stakeds[stakeId] ;
-        require(s.user == msg.sender, "Not stake owner");
         require(s.endingTimestamp > block.timestamp, "Staking period not ended");
         require(s.updated == true, "Stake not yet transferred on C-chain");
         require(s.redeemed == false, "Stake already redemeed");
         require(balanceOf(msg.sender) >= s.amount, "Not enough sAVAX on address");
+        require(s.user == msg.sender || s.endingTimestamp > block.timestamp + secondsBeforeAllRedeem, "Not stake owner");
         s.redeemed = true ;
         _burn(msg.sender, s.amount);
         require(payable(msg.sender).send(s.finalAmount), "Send failed");
@@ -84,9 +85,10 @@ contract stakedAVAX is ERC20, Ownable {
 
     }
 
-    function updateVariables(uint256 secondsF, uint256 maxSecondsF, uint256 minimum) public onlyOwner {
+    function updateVariables(uint256 secondsF, uint256 maxSecondsF, uint256 secondsAll, uint256 minimum) public onlyOwner {
         maxSecondsInFuture = maxSecondsF ;
         secondsInFuture = secondsF ;
+        secondsBeforeAllRedeem = secondsAll ;
         minimumValue = minimum ;
     }
 

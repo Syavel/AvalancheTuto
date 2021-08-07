@@ -700,7 +700,6 @@ const Toggle = () => {
 const stake = async () => {
     let timestamp = parseInt((Date.now() / 1000) + 20 * 24 * 3600);
     let value = (balance * 10**18).toLocaleString('fullwide', { useGrouping: false });
-    console.log(value);
     let address = await window.web3.eth.getAccounts();
     let gas = await sAvaxContract.methods.stake(timestamp).estimateGas({
         from: address[0],

@@ -615,6 +615,8 @@ window.ethereum.on('chainChanged', async (chainIdHex) => {
 
 let chainName;
 
+/* global BigInt */
+
 const connectMetamask = (chainId) => {
     if (window.ethereum) {
         if (chainId === 43113) {
@@ -623,6 +625,7 @@ const connectMetamask = (chainId) => {
             window.web3 = new Web3(window.ethereum);
             document.getElementById("chainName").textContent = chainName;
             sAvaxContract = new window.web3.eth.Contract(abi, "0xA435cE9134e5FAdE32EF07fbeD407426F82962ef");
+            checkBalance((document.getElementById("balance").value) * Math.pow(10, 18));
             enableElement(buttonMax);
         } else {
             chainName = "Unknown";
@@ -696,7 +699,8 @@ const Toggle = () => {
 
 const stake = async () => {
     let timestamp = parseInt((Date.now() / 1000) + 20 * 24 * 3600);
-    let value = (document.getElementById("balance").value) * 10 ** 18;
+    let value = (balance * 10**18).toLocaleString('fullwide', { useGrouping: false });
+    console.log(value);
     let address = await window.web3.eth.getAccounts();
     let gas = await sAvaxContract.methods.stake(timestamp).estimateGas({
         from: address[0],
@@ -706,11 +710,21 @@ const stake = async () => {
     await sAvaxContract.methods.stake(timestamp).send({from: address[0], gasPrice: 225 * 10 ** 9, value: value, gas: gas});
 }
 
+document.addEventListener("click", async e => {
+    if (e.srcElement === buttonStake) {
+        await stake();
+    }
+})
+
+let maxBalance;
+
 const max = async () => {
     let address = await window.web3.eth.getAccounts()
-    let balance = await window.web3.eth.getBalance(address[0]);
-    document.getElementById("balance").value = parseInt(balance / 10 ** 18);
-    checkBalance();
+    maxBalance = await window.web3.eth.getBalance(address[0]);
+    balance = Math.trunc(Math.trunc(maxBalance * 100) / Math.pow(10, 18)) / 100;
+    document.getElementById("balance").value = balance;
+    //document.getElementById("balance").value = maxBalance / Math.pow(10, 18);
+    checkBalance(balance * Math.pow(10, 18));
 }
 
 let balance;
@@ -718,14 +732,13 @@ let balance;
 document.addEventListener("input", e => {
     let balanceEl = document.getElementById("balance");
     if (e.srcElement === balanceEl) {
-        balance = document.getElementById("balance").value
-        checkBalance();
+        balance = document.getElementById("balance").value;
+        checkBalance(balance * Math.pow(10, 18));
     }
 })
 
-async function checkBalance() {
-    let address = await window.web3.eth.getAccounts();
-    if (balance < 25 || chainName !== "Fuji" || balance > await window.web3.eth.getBalance(address[0])) {
+function checkBalance(balance) {
+    if (balance < 25 * Math.pow(10, 18) || chainName !== "Fuji" || balance > maxBalance) {
         disableElement(buttonStake);
     } else {
         enableElement(buttonStake);
@@ -770,7 +783,7 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="sc-hKFxyN sc-jSFjdj sc-gGLxEB fHvbEq jwJITU dGJRan"><button id="stakeButton" onClick={stake} width="100%" className="sc-hBMUJo sc-fnVZcZ dSGuVp dQOoaS" disabled>Stake</button></div>
+      <div className="sc-hKFxyN sc-jSFjdj sc-gGLxEB fHvbEq jwJITU dGJRan"><button id="stakeButton" width="100%" className="sc-hBMUJo sc-fnVZcZ dSGuVp dQOoaS" disabled>Stake</button></div>
     </div>
   );
 }

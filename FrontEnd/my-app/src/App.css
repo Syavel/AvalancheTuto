@@ -1,0 +1,237 @@
+* {
+  box-sizing: border-box;
+}
+
+.App {
+  text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.network {
+  color : white;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.connect{
+  background-color: rgb(34, 34, 34);
+  padding: 12px 24px;
+  -webkit-box-align: center;
+  align-items: center;
+  border-radius: 8px;
+  margin-left: 40px;
+  position: relative;
+  cursor: pointer;
+}
+
+.header {
+  background-color: rgb(34, 34, 34);
+  color :rgb(34, 34, 34);
+}
+
+.stake{
+  background: rgb(34, 34, 34);
+  border-radius: 8px;
+  width: 509px;
+  max-width: 90%;
+  align-self: center;
+  -webkit-box-align: center;
+  align-items: center;
+  overflow: hidden;
+  transition: height 0.5s ease 0s;
+  min-height: 410px;
+}
+
+.stake-inside {
+  width: 100%;
+  padding: 32px;
+  position: relative;
+}
+
+.stake2 {
+  background: rgb(255, 255, 255);
+  border-radius: 8px;
+  height: 60px;
+  width: 100%;
+  -webkit-box-align: center;
+  align-items: center;
+  padding: 8px 8px 8px 16px;
+  position: relative;
+}
+
+button {
+  appearance: auto;
+  -webkit-writing-mode: horizontal-tb !important;
+  text-rendering: auto;
+  color: -internal-light-dark(black, white);
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0px;
+  text-shadow: none;
+  display: inline-block;
+  text-align: center;
+  align-items: flex-start;
+  cursor: default;
+  background-color: -internal-light-dark(rgb(239, 239, 239), rgb(59, 59, 59));
+  box-sizing: border-box;
+  margin: 0em;
+  font: 400 13.3333px Arial;
+  padding: 1px 6px;
+  border-width: 2px;
+  border-style: outset;
+  border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+  border-image: initial;
+}
+
+input {
+  -webkit-writing-mode: horizontal-tb !important;
+  text-rendering: auto;
+  color: -internal-light-dark(black, white);
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0px;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+  appearance: auto;
+  background-color: -internal-light-dark(rgb(255, 255, 255), rgb(59, 59, 59));
+  -webkit-rtl-ordering: logical;
+  cursor: text;
+  margin: 0em;
+  font: 400 13.3333px Arial;
+  padding: 1px 2px;
+  border-width: 2px;
+  border-style: inset;
+  border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+  border-image: initial;
+}
+
+input[type="number" i] {
+  padding: 1px 2px;
+}
+
+.htmXgq {
+  border: none;
+  font-size: 16px;
+  color: rgb(122, 122, 122);
+  outline: none;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  min-width: 0px;
+} 
+
+.bCRyju {
+  width: 32px;
+  border-radius: 50%;
+}
+
+.cGPUwk {
+  font-weight: 500;
+  font-size: 16px;
+  text-align: left;
+  color: rgb(26, 26, 28);
+}
+
+.dwdOKO {
+  width: auto;
+  border: none;
+  font-weight: 500;
+  text-decoration: underline;
+  outline: none;
+  background: transparent;
+  padding: 0px;
+  color: rgb(232, 232, 235);
+}
+
+.fHvbEq {
+  display: flex;
+  -webkit-box-pack: initial;
+  justify-content: initial;
+  -webkit-box-align: initial;
+  align-items: initial;
+  padding: 0px;
+  margin: 0px;
+  width: auto;
+  height: initial;
+  flex: initial;
+}
+
+.jwJITU {
+  flex-direction: column;
+}
+
+.fBuyvo {
+  width: 100%;
+  padding: 32px;
+  position: relative;
+}
+
+.dGJRan {
+  margin: 16px 0px 0px;
+  width: 509px;
+  max-width: 90%;
+  align-self: center;
+}
+
+.dQOoaS[disabled] {
+  background-color: rgb(88, 88, 91);
+  color: rgb(108, 108, 110);
+  cursor: not-allowed;
+}
+
+.dQOoaS {
+  background-color: rgba(233,64,66,255);
+  color: rgb(255, 255, 255);
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+}
+
+.dSGuVp {
+  width: 100%;
+  margin: 2px;
+  font-size: 18px;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  font-weight: 600;
+  padding: 21px 24px;
+  cursor: pointer;
+  line-height: 22px;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+.foYllf {
+  color: rgb(26, 26, 28);
+  margin: 0px 24px 0px 8px;
+  font-size: 16px;
+}

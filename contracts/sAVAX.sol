@@ -35,6 +35,7 @@ contract stakedAVAX is ERC20, Ownable {
         s.endingTimestamp = timestamp ;
         s.user = payable(msg.sender) ;
         currentStakedByUser[msg.sender].push(stakeNumber);
+        _mint(msg.sender, msg.value);
 
         emit Staked(s.user, s.stakeId, msg.value);
         stakeNumber++;

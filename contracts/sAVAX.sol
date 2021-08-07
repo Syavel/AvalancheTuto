@@ -56,7 +56,7 @@ contract stakedAVAX is ERC20, Ownable {
         Stake storage s = stakeds[stakeId] ;
         require(s.endingTimestamp > block.timestamp, "Staking period not ended");
         require(s.updated == true, "Stake not yet transferred on C-chain");
-        require(s.redeemed == false, "Stake already redeemed");
+        require(s.redeemed == false, "Stake already redemeed");
         require(balanceOf(msg.sender) >= s.amount, "Not enough sAVAX on address");
         require(s.user == msg.sender || s.endingTimestamp > block.timestamp + secondsBeforeAllRedeem, "Not stake owner");
         s.redeemed = true ;

@@ -572,10 +572,11 @@ const abi = [
 ]
 
 let sAvaxContract;
-let buttonStake;
+let buttonStake, buttonMax;
 
 window.addEventListener('load', async function () {
     buttonStake = document.getElementById("stakeButton");
+    buttonMax = document.getElementById("maxButton");
     if (window.ethereum) {
         try {
             if (window.web3.currentProvider.isMetaMask === true) {
@@ -612,15 +613,24 @@ window.ethereum.on('chainChanged', async (chainIdHex) => {
     connectMetamask(chainId);
 });
 
+let chainName;
+
 const connectMetamask = (chainId) => {
     if (window.ethereum) {
         if (chainId === 43113) {
+            chainName = "Fuji";
             console.log("Connect to Fuji...");
             window.web3 = new Web3(window.ethereum);
+            document.getElementById("chainName").textContent = chainName;
             sAvaxContract = new window.web3.eth.Contract(abi, "0xA435cE9134e5FAdE32EF07fbeD407426F82962ef");
+            enableElement(buttonMax);
         } else {
+            chainName = "Unknown";
             let error = "Wrong network!";
             console.log(error);
+            document.getElementById("chainName").textContent = chainName;
+            disableElement(buttonStake);
+            disableElement(buttonMax);
             return error;
         }
     }
@@ -680,7 +690,6 @@ const Toggle = () => {
       </svg>}
       </button>
   }
-  <div className="network">{chainId}</div>
     </div>
   )
 }
@@ -700,27 +709,35 @@ const stake = async () => {
 const max = async () => {
     let address = await window.web3.eth.getAccounts()
     let balance = await window.web3.eth.getBalance(address[0]);
-    document.getElementById("balance").value = balance / 10 ** 18;
+    document.getElementById("balance").value = parseInt(balance / 10 ** 18);
+    checkBalance();
 }
+
+let balance;
 
 document.addEventListener("input", e => {
     let balanceEl = document.getElementById("balance");
     if (e.srcElement === balanceEl) {
-        let balance = document.getElementById("balance").value
-        if (balance < 25) {
-            greyStake();
-        } else {
-            enableStake();
-        }
+        balance = document.getElementById("balance").value
+        checkBalance();
     }
 })
 
-function greyStake() {
-    buttonStake.setAttribute("disabled", "disabled");
+async function checkBalance() {
+    let address = await window.web3.eth.getAccounts();
+    if (balance < 25 || chainName !== "Fuji" || balance > await window.web3.eth.getBalance(address[0])) {
+        disableElement(buttonStake);
+    } else {
+        enableElement(buttonStake);
+    }
 }
 
-function enableStake() {
-    buttonStake.removeAttribute("disabled");
+function disableElement(element) {
+    element.setAttribute("disabled", "disabled");
+}
+
+function enableElement(element) {
+    element.removeAttribute("disabled");
 }
 
 /*function demoAsyncCall() {
@@ -738,19 +755,22 @@ function App() {
       <div className="connect">
         <header className='header'>
           <Toggle/>
+            <span className="sc-fhYwyz eACbCg">
+                <div id="chainName" className="sc-kGXeez sc-dxgOiQ sc-kEYyzF sc-jzgbtB hevqtb"/>
+            </span>
         </header>
       </div>
       <div className="stake">
         <div className="stake-inside">
           <div className="stake2">
-            <input id="balance" placeholder="0.00" type="number" className="sc-jcwpoC htmXgq"/>
-            <button className="sc-hBMUJo sc-bkbkJK sc-carFqZ eYMdgl dwdOKO foYllf" onClick={max}>Max</button>
+            <input id="balance" placeholder="0" type="number"  min="0" className="sc-jcwpoC htmXgq"/>
+            <button id="maxButton" className="sc-hBMUJo sc-bkbkJK sc-carFqZ eYMdgl dwdOKO foYllf" onClick={max}>Max</button>
             <img width="32" height="32" src="https://explorer.avax.network/img/avax_icon_circle.png" alt="$AVAX" className="sc-hiKfDv bCRyju"/>
             <span size="16" color="tertiary" className="sc-bdnxRM cGPUwk">AVAX</span>
           </div>
         </div>
       </div>
-      <div className="sc-hKFxyN sc-jSFjdj sc-gGLxEB fHvbEq jwJITU dGJRan"><button onClick={stake} width="100%" id="stakeButton" className="sc-hBMUJo sc-fnVZcZ dSGuVp dQOoaS" disabled>Stake</button></div>
+      <div className="sc-hKFxyN sc-jSFjdj sc-gGLxEB fHvbEq jwJITU dGJRan"><button id="stakeButton" onClick={stake} width="100%" className="sc-hBMUJo sc-fnVZcZ dSGuVp dQOoaS" disabled>Stake</button></div>
     </div>
   );
 }

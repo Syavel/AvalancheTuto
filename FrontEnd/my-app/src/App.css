@@ -3,6 +3,8 @@
 }
 
 .App {
+  background: rgb(2,0,36);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(121,22,9,1) 50%, rgba(11,75,175,1) 100%);
   text-align: center;
   background-color: #282c34;
   min-height: 100vh;
@@ -14,9 +16,13 @@
   color: white;
 }
 
-.network {
-  color : white;
+#chainName {
+  color: red;
 }
+
+/*.network {
+  color : white;
+}*/
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {

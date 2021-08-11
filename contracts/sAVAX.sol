@@ -16,6 +16,7 @@ contract stakedAVAX is ERC20, Ownable {
         bool withdraw ;
         bool updated ;
         bool redeemed ;
+        string PChainTx ;
     }
     mapping (uint256 => Stake) public stakeds ;
     uint256 public secondsInFuture = 14*24*3600 ;
@@ -83,6 +84,11 @@ contract stakedAVAX is ERC20, Ownable {
         require(payable(msg.sender).send(s.amount), "Send failed");
         s.withdraw = true ;
 
+    }
+
+    function setPChainTx(uint256 stakeId, string calldata h) public onlyOwner {
+        Stake storage s = stakeds[stakeId] ;
+        s.PChainTx = h ;
     }
 
     function updateVariables(uint256 secondsF, uint256 maxSecondsF, uint256 secondsAll, uint256 minimum) public onlyOwner {

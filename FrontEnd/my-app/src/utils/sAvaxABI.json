@@ -60,7 +60,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "finalAMount",
+				"name": "finalAmount",
 				"type": "uint256"
 			}
 		],
@@ -79,7 +79,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "finalAMount",
+				"name": "finalAmount",
 				"type": "uint256"
 			}
 		],
@@ -290,6 +290,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "maxSecondsInFuture",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "minimumValue",
 		"outputs": [
 			{
@@ -349,6 +362,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "secondsBeforeAllRedeem",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "secondsInFuture",
 		"outputs": [
 			{
@@ -364,6 +390,24 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "stakeId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "h",
+				"type": "string"
+			}
+		],
+		"name": "setPChainTx",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "timestamp",
 				"type": "uint256"
 			}
@@ -371,6 +415,25 @@
 		"name": "stake",
 		"outputs": [],
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "stakeByUser",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "toto",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -423,6 +486,11 @@
 			},
 			{
 				"internalType": "bool",
+				"name": "withdraw",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
 				"name": "updated",
 				"type": "bool"
 			},
@@ -430,6 +498,11 @@
 				"internalType": "bool",
 				"name": "redeemed",
 				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "PChainTx",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -554,11 +627,34 @@
 			},
 			{
 				"internalType": "uint256",
+				"name": "maxSecondsF",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "secondsAll",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
 				"name": "minimum",
 				"type": "uint256"
 			}
 		],
 		"name": "updateVariables",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "stakeId",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

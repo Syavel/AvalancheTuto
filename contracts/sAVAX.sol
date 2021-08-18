@@ -28,6 +28,10 @@ contract stakedAVAX is ERC20, Ownable {
 
     }
 
+    function stakeByUser(address user) public view  returns(uint256[] memory toto){
+        return currentStakedByUser[user];
+    }
+
     function stake(uint256 timestamp) public payable {
         require(timestamp > block.timestamp + secondsInFuture, "Ending period not enough in the future");
         require(msg.value >= minimumValue, "Not enough avax for delegation");

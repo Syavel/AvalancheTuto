@@ -43,7 +43,7 @@ contract stakedAVAX is ERC20, Ownable {
         currentStakedByUser[msg.sender].push(stakeNumber);
         _mint(msg.sender, msg.value);
 
-        emit Staked(s.user, s.stakeId, msg.value);
+        emit Staked(s.user, s.stakeId, msg.value, timestamp);
         stakeNumber++;
     }
 
@@ -102,7 +102,7 @@ contract stakedAVAX is ERC20, Ownable {
         minimumValue = minimum ;
     }
 
-    event Staked(address indexed user, uint256 stakeId, uint256 value);
+    event Staked(address indexed user, uint256 stakeId, uint256 value, uint256 timestamp);
 
     event StakeEnded(uint256 stakeId, uint256 finalAmount);
 

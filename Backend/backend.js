@@ -4,10 +4,7 @@
 import fs from "fs";
 import avalanche from "avalanche";
 import Web3 from "web3";
-import {Buffer} from "buffer";
-//import {UTXOSet} from "avalanche/src/apis/platformvm/utxos";
-
-let ip, protocol, port, networkID, avalancheInstance;
+import { Buffer } from "buffer";
 
 let xChain, xKeyChain, xChainAddress;
 let cChain, cKeyChain, cChainAddress;
@@ -15,27 +12,46 @@ let pChain, pKeyChain, pChainAddress;
 
 let xChainBlockchainID, cChainBlockchainID, pChainBlockchainID;
 
-let xVMUTXOResponse, xUTXOSet;
-let cVMUTXOResponse, cUTXOSet;
-let pVMUTXOResponse, pUTXOSet;
-
 let web3;
 
-let currentTxId = [];
+let contractAbi;
 
-let utxoset;
+async function waitForStaked() {
+    let stakingContract = new web3.eth.Contract(contractAbi, "0x319c9E5bd0451A5F51451F64f4F36cdB60e3f3D1");
+    let stakedEvent = stakingContract.events.Staked();
+    await web3.eth.subscribe('logs', {
+        address: stakedEvent.arguments[0].address,
+        topics: stakedEvent.arguments[0].topics,
+    }, async function (error, logs) {
+        if (!error) {
+            let dataHex = logs.data.substring(2);
+            let id = parseInt(dataHex.substring(0, 64), 16);
+            let amountWithDecimals = parseInt(dataHex.substring(64), 16);
+            await CtoP(id, amountWithDecimals);
+        } else {
+            console.log(error)
+        }
+    })
+}
 
-async function CtoP() { //a C --> P cross-chain transfer doesn't exists, but C --> X, X --> P does.
+async function stakeToNode(nodeId) {
     
-    // Includes the fees in the transferred AVAX
+}
+
+async function CtoP(amountWithDecimals) { //a C --> P cross-chain transfer doesn't exists, but C --> X, X --> P does.
+    // On the C-Chain, the ERC-20 token WAVAX has 18 decimals. We need to convert it to 9 decimals, for AVAX.
+    let amountInAvax = amountWithDecimals / 10**18
+    let amountInNAvax = String(amountInAvax * 10**9)
+    
+    let utxoset;
     
     xChainAddress = xKeyChain.getAddressStrings();
     cChainAddress = cKeyChain.getAddressStrings();
     pChainAddress = pKeyChain.getAddressStrings();
     
-    let amount = new avalanche.BN("1000000000"); //1 AVAX
+    let amount = new avalanche.BN(amountInNAvax); //1 AVAX
     
-    let cChainHexAddress = "0xa81eb27374740aec026ebe760f97477dbfed616f";
+    let cChainHexAddress = "";
     
     let nonce = await web3.eth.getTransactionCount(cChainHexAddress, "pending");
     
@@ -61,7 +77,7 @@ async function CtoP() { //a C --> P cross-chain transfer doesn't exists, but C -
     
     return new Promise(function (resolve, reject) {
         pollTransaction(waitForStatusC, CtoXTxId, resolve, reject);
-    }).then(async (resolve, reject) => {
+    }).then(async (resolve) => {
         if (resolve === "Accepted") {
             utxoset = (await xChain.getUTXOs(
                 xChainAddress,
@@ -89,8 +105,7 @@ async function CtoP() { //a C --> P cross-chain transfer doesn't exists, but C -
             // C --> X done, now let's start X --> P.
             
             utxoset = (await xChain.getUTXOs(
-                xChainAddress,
-                //xChainBlockchainID
+                xChainAddress
             )).utxos;
             
             let unsignedXtoPTx = await xChain.buildExportTx(
@@ -113,7 +128,7 @@ async function CtoP() { //a C --> P cross-chain transfer doesn't exists, but C -
             
             return new Promise(function (resolve, reject) {
                 pollTransaction(waitForStatusX, XtoPTxId, resolve, reject);
-            }).then(async (resolve, reject) => {
+            }).then(async (resolve) => {
                 if (resolve === "Accepted") { // ... And import the transaction on the P chain.
                     utxoset = (await pChain.getUTXOs(
                         pChainAddress,
@@ -137,12 +152,14 @@ async function CtoP() { //a C --> P cross-chain transfer doesn't exists, but C -
                     fee = pChain.getDefaultTxFee();
             
                     amount = amount.sub(fee);
+                    
+                    await stakeToNode(nodeId)
                 } else {
-                    // Error
+                    console.log("An error happened for a transaction with ID: " + XtoPTxId)
                 }
             })
         } else {
-            // Throw an error
+            console.log("An error happened for a transaction with ID: " + CtoXTxId)
         }
     })
 }
@@ -162,13 +179,11 @@ let transactionStatus;
 
 async function waitForStatusX(transactionId) {
     transactionStatus = await xChain.getTxStatus(transactionId);
-    //console.log(transactionStatus);
     return transactionStatus;
 }
 
 async function waitForStatusP(transactionId) { //Either X or P chain.
     transactionStatus = (await pChain.getTxStatus(transactionId)).status;
-    //console.log(transactionStatus);
     return transactionStatus;
 }
 
@@ -179,23 +194,25 @@ async function waitForStatusC(transactionId) {
 
 async function pollTransaction(func, transactionID, resolve, reject) {
     transactionStatus = await func(transactionID);
-    //console.log(transactionStatus);
     if (transactionStatus === "Rejected") {
         reject(transactionStatus);
     }
-    if (transactionStatus !== "Accepted"/* || transactionStatus === "Rejected"*/) {
+    if (transactionStatus !== "Accepted") {
         setTimeout(pollTransaction, 100, func, transactionID, resolve, reject);
     } else {
         resolve(transactionStatus);
     }
 }
 
-let xAvaxAssetId, cAvaxAssetId, pAvaxAssetId;
+let xAvaxAssetId, cAvaxAssetId;
+
+let avalancheInstance;
+
 async function getInformations() {
-    ip = "localhost";
-    port = 9650;
-    protocol = "http";
-    networkID = 5;
+    const ip = "localhost";
+    const port = 9650;
+    const protocol = "http";
+    const networkID = 5;
     avalancheInstance = new avalanche.Avalanche(ip, port, protocol, networkID);
     
     const path = '/ext/bc/C/rpc';
@@ -216,9 +233,14 @@ async function getInformations() {
     
     xAvaxAssetId = binTools.cb58Encode((await xChain.getAssetDescription("AVAX")).assetID);
     cAvaxAssetId = binTools.cb58Encode((await cChain.getAssetDescription("AVAX")).assetID);
-    //pAvaxAssetId = binTools.cb58Encode((await pChain.getAssetDescription("AVAX")).assetID);
     
-    web3 = new Web3(`${protocol}://${ip}:${port}${path}`);
+    const web3Protocol = "wss";
+    const web3Path = '/ext/bc/C/ws';
+    
+    //web3 = new Web3(`${web3Protocol}://${ip}:${port}${web3Path}`);
+    web3 = new Web3("wss://api.avax-test.network/ext/bc/C/ws");
+    
+    contractAbi = JSON.parse(await fs.readFileSync("./abi.json"))
 }
 
 async function setup() {
@@ -226,9 +248,11 @@ async function setup() {
     await importKeys();
 }
 
-async function start() {
+async function main() {
     await setup();
-    await CtoP();
+    await waitForStaked();
 }
 
-start();
+main().catch((e) => {
+  console.log("We got an error! " + e);
+})
